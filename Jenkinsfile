@@ -21,8 +21,8 @@ pipeline {
                         writeFile file: 'deploy.ps1', text: """
 \$securePass = ConvertTo-SecureString '\$env:PASS' -AsPlainText -Force
 \$cred = New-Object System.Management.Automation.PSCredential('\$env:USER', \$securePass)
-New-PSDrive -Name Z -PSProvider FileSystem -Root "\\\\${env.WIN_SERVER}\\c\$" -Credential \$cred -Persist
-Copy-Item -Path ${env.LOCAL_FILE} -Destination "Z:\\inetpub\\wwwroot\\" -Force
+New-PSDrive -Name Z -PSProvider FileSystem -Root "${env.WIN_SERVER}" -Credential \$cred -Persist
+Copy-Item -Path ${env.LOCAL_FILE} -Destination "C:\\inetpub\\wwwroot\\" -Force
 Remove-PSDrive -Name Z
 """
                         powershell 'powershell.exe -ExecutionPolicy Bypass -File deploy.ps1'
