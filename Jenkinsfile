@@ -4,7 +4,8 @@ pipeline {
     environment {
         WIN_SERVER = '172.31.47.164'
         WIN_USER = 'Administrator' // Or another user
-        REMOTE_DIR = 'C:\\inetpub\\wwwroot'
+        REMOTE_DIR = ':/c/inetpub/wwwroot/'
+
         LOCAL_FILE = 'index.html'
     }
 
@@ -19,8 +20,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'win-server-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     bat """
-                        pscp -pw %PASS% -batch %LOCAL_FILE% %USER%@%WIN_SERVER%:%REMOTE_DIR%
+                        pscp -pw "%PASS%" -batch index.html %USER%@%WIN_SERVER%:/c/inetpub/wwwroot/
                     """
+
                 }
             }
         }
