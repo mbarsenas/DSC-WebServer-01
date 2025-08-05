@@ -19,9 +19,9 @@ pipeline {
         stage('Deploy to Windows Server') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'win-server-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                bat """
-                    powershell -Command "Copy-Item -Path index.html -Destination \\\\${WIN_SERVER}\\c$\\inetpub\\wwwroot\\ -Credential (New-Object System.Management.Automation.PSCredential('${USER}', (ConvertTo-SecureString '${PASS}' -AsPlainText -Force)))"
-                """
+                bat('''
+                    powershell -Command "Copy-Item -Path index.html -Destination \\\\%WIN_SERVER%\\c$\\inetpub\\wwwroot\\ -Credential (New-Object System.Management.Automation.PSCredential('%USER%', (ConvertTo-SecureString '%PASS%' -AsPlainText -Force)))"
+                ''')
 
                 }
             }
