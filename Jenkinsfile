@@ -3,9 +3,7 @@ pipeline {
 
     environment {
         WIN_SERVER = '18.216.227.250'
-        WIN_USER = 'Administrator' // Or another user
-        REMOTE_DIR = ':/c/inetpub/wwwroot/'
-
+        WIN_USER = 'Administrator'
         LOCAL_FILE = 'index.html'
     }
 
@@ -19,15 +17,16 @@ pipeline {
         stage('Deploy to Windows Server') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'win-server-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-bat '''
-powershell -NoProfile -Command ^
-  "$securePass = ConvertTo-SecureString \\"%PASS%\\" -AsPlainText -Force; ^
-   $cred = New-Object System.Management.Automation.PSCredential(\\"%USER%\\", $securePass); ^
-   New-PSDrive -Name Z -PSProvider FileSystem -Root \\\\%WIN_SERVER%\\c$ -Credential $cred -Persist; ^
-   Copy-Item -Path index.html -Destination \\"Z:\\inetpub\\wwwroot\\"; ^
-   Remove-PSDrive -Name Z"
-'''
-
+                    script {
+                        writeFile file: 'deploy.ps1', text: """
+\$securePass = ConvertTo-SecureString '\$env:PASS' -AsPlainText -Force
+\$cred = New-Object System.Management.Automation.PSCredential('\$env:USER', \$securePass)
+New-PSDrive -Name Z -PSProvider FileSystem -Root "\\\\${env.WIN_SERVER}\\c\$" -Credential \$cred -Persist
+Copy-Item -Path ${env.LOCAL_FILE} -Destination "Z:\\inetpub\\wwwroot\\" -Force
+Remove-PSDrive -Name Z
+"""
+                        powershell 'powershell.exe -ExecutionPolicy Bypass -File deploy.ps1'
+                    }
                 }
             }
         }
