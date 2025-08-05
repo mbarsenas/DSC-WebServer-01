@@ -19,9 +19,12 @@ pipeline {
         stage('Deploy to Windows Server') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'win-server-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    bat """
-                        pscp -pw "%PASS%" -batch index.html %USER%@%WIN_SERVER%:/c/inetpub/wwwroot/
-                    """
+                powershell """
+                    \$secpasswd = ConvertTo-SecureString "$env:PASS" -AsPlainText -Force
+                    \$cred = New-Object System.Management.Automation.PSCredential ("$env:USER", \$secpasswd)
+                    Copy-Item -Path index.html -Destination \\\\${env:WIN_SERVER}\\c$\\inetpub\\wwwroot\\ -Credential \$cred -Force
+                """
+
 
                 }
             }
