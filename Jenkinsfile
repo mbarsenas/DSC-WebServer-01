@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        WIN_SERVER = '172.31.47.164'
+        WIN_SERVER = '18.216.227.250'
         WIN_USER = 'Administrator' // Or another user
         REMOTE_DIR = ':/c/inetpub/wwwroot/'
 
