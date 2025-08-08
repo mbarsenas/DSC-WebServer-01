@@ -21,7 +21,7 @@ pipeline {
                         writeFile file: 'deploy.ps1', text: """
 \$securePass = ConvertTo-SecureString '\$env:PASS' -AsPlainText -Force
 \$cred = New-Object System.Management.Automation.PSCredential('\$env:USER', \$securePass)
-New-PSDrive -Name Z -PSProvider FileSystem -Root "\\\\${env.WIN_SERVER}\\c\$" -Credential \$cred -Persist
+New-PSDrive -Name Z -PSProvider FileSystem -Root "\\18.216.227.250\SomeShare" -Credential $creds -Persist
 Copy-Item -Path ${env.LOCAL_FILE} -Destination "C:\\inetpub\\wwwroot\\" -Force
 Remove-PSDrive -Name Z
 """
